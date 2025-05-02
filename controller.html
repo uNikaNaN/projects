@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ESP Car MQTT Control</title>
+</head>
+<body style="text-align:center; font-family:sans-serif;">
+  <h2>MQTT Car Control</h2>
+  <p>Status: <span id="status">Connecting...</span></p>
+  <button onclick="send('W')">W (Forward)</button><br><br>
+  <button onclick="send('A')">A (Right)</button>
+  <button onclick="send('D')">D (Left)</button><br><br>
+  <button onclick="send('S')">S (Backward)</button><br><br>
+  <button onclick="send('O')">O (Stop)</button><br><br>
+  <button onclick="send('AUTO')">Auto Mode</button>
+  <button onclick="send('MANUAL')">Manual Mode</button>
+
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <script>
+    const client = mqtt.connect("wss://broker.hivemq.com:8884/mqtt");
+    const topic = "mycar/control";
+
+    client.on("connect", () => {
+      document.getElementById("status").innerText = "Connected to MQTT";
+    });
+
+    client.on("error", (err) => {
+      document.getElementById("status").innerText = "MQTT Error";
+      console.error(err);
+    });
+
+    function send(cmd) {
+      client.publish(topic, cmd);
+    }
+
+    document.addEventListener('keydown', function(e) {
+      const key = e.key.toLowerCase();
+      if (key === 'w') send('W');
+      else if (key === 's') send('S');
+      else if (key === 'a') send('A');
+      else if (key === 'd') send('D');
+      else if (key === 'o') send('O');
+    });
+  </script>
+</body>
+</html>
