@@ -4,9 +4,8 @@
   <title>ESP8266 Robot Controller</title>
   <script>
     const password = prompt("Enter password to access the controller:");
-    if (password !== "tsnottuff") {
-      alert("Access denied!");
-      document.write("You are not authorized to view this page.");
+    if (password !== "mySecret123") {
+      document.write("<h2 style='text-align:center; color:red;'>Access Denied</h2>");
       throw new Error("Unauthorized access");
     }
   </script>
@@ -25,7 +24,6 @@
 
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <script>
-
     const client = mqtt.connect("wss://broker.hivemq.com:8884/mqtt");
     const topic = "mycar/control";
     let currentMode = 'MANUAL';
@@ -46,7 +44,7 @@
     function switchMode(mode) {
       currentMode = mode;
       document.getElementById("modeStatus").innerText = `Current Mode: ${mode}`;
-      send(mode);  // Send the mode command
+      send(mode);
     }
 
     document.addEventListener('keydown', function(e) {
