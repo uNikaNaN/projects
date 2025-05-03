@@ -2,28 +2,31 @@
 <html>
 <head>
   <title>ESP8266 Robot Controller</title>
-  <script>
-    const password = prompt("Enter password to access the controller:");
-    if (password !== "mySecret123") {
-      document.write("<h2 style='text-align:center; color:red;'>Access Denied</h2>");
-      throw new Error("Unauthorized access");
-    }
-  </script>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 </head>
 <body style="text-align:center; font-family:sans-serif;">
-  <h2>MQTT Car Control</h2>
-  <p>Status: <span id="status">Connecting...</span></p>
-  <h3 id="modeStatus">Current Mode: Manual</h3>
-  <button onclick="send('W')">W (Forward)</button><br><br>
-  <button onclick="send('A')">A (Right)</button>
-  <button onclick="send('D')">D (Left)</button><br><br>
-  <button onclick="send('S')">S (Backward)</button><br><br>
-  <button onclick="send('O')">O (Stop)</button><br><br>
-  <button onclick="switchMode('AUTO')">Auto Mode</button>
-  <button onclick="switchMode('MANUAL')">Manual Mode</button>
-
-  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <script>
+    const password = prompt("Enter password to access the controller:");
+
+    if (password !== "mySecret123") {
+      document.body.innerHTML = "<h2 style='color:red;'>Access Denied</h2>";
+      throw new Error("Unauthorized access");
+    }
+
+    // Now we build the UI dynamically after password is verified
+    document.body.innerHTML = `
+      <h2>MQTT Car Control</h2>
+      <p>Status: <span id="status">Connecting...</span></p>
+      <h3 id="modeStatus">Current Mode: Manual</h3>
+      <button onclick="send('W')">W (Forward)</button><br><br>
+      <button onclick="send('A')">A (Right)</button>
+      <button onclick="send('D')">D (Left)</button><br><br>
+      <button onclick="send('S')">S (Backward)</button><br><br>
+      <button onclick="send('O')">O (Stop)</button><br><br>
+      <button onclick="switchMode('AUTO')">Auto Mode</button>
+      <button onclick="switchMode('MANUAL')">Manual Mode</button>
+    `;
+
     const client = mqtt.connect("wss://broker.hivemq.com:8884/mqtt");
     const topic = "mycar/control";
     let currentMode = 'MANUAL';
@@ -37,11 +40,11 @@
       console.error(err);
     });
 
-    function send(cmd) {
+    window.send = function(cmd) {
       client.publish(topic, cmd);
     }
 
-    function switchMode(mode) {
+    window.switchMode = function(mode) {
       currentMode = mode;
       document.getElementById("modeStatus").innerText = `Current Mode: ${mode}`;
       send(mode);
